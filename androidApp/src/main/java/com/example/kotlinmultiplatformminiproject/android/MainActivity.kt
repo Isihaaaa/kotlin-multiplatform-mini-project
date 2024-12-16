@@ -9,9 +9,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.kotlinmultiplatformminiproject.android.ui.eventcreate.EventCreateScreen
 import com.example.kotlinmultiplatformminiproject.android.ui.eventcreate.EventCreateViewModel
 import com.example.kotlinmultiplatformminiproject.android.ui.eventlist.EventListScreen
@@ -21,6 +23,7 @@ import com.example.kotlinmultiplatformminiproject.android.ui.eventmodify.EventMo
 import com.example.kotlinmultiplatformminiproject.android.ui.eventmodify.EventModifyViewModel
 import com.example.kotlinmultiplatformminiproject.android.ui.login.LoginScreen
 import com.example.kotlinmultiplatformminiproject.android.ui.login.LoginViewModel
+import com.example.kotlinmultiplatformminiproject.android.ui.manager.EventManager
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,6 +31,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApplicationTheme {
                 val navController = rememberNavController()
+                val eventManager = EventManager()
 
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -45,22 +49,39 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable(route = Route.EVENT_LIST) {
-                            val eventListViewModel = EventListViewModel()
+                            val eventListViewModel = EventListViewModel(
+                                eventManager = eventManager
+                            )
                             EventListScreen(
                                 navController = navController,
                                 viewModel = eventListViewModel
                             )
                         }
                         composable(route = Route.EVENT_CREATE) {
-                            val eventCreateViewModel = EventCreateViewModel()
+                            val eventCreateViewModel = EventCreateViewModel(
+                                eventManager = eventManager
+                            )
 
                             EventCreateScreen(
                                 navController = navController,
                                 viewModel = eventCreateViewModel
                             )
                         }
-                        composable(route = Route.EVENT_MODIFY) {
-                            val eventModifyViewModel = EventModifyViewModel()
+                        composable(
+                            route = "Route.EVENT_MODIFY/{eventId}",
+                            arguments = listOf(
+                                navArgument(name = "eventId") {
+                                    type = NavType.IntType
+                               }
+                            )
+                        ) {
+                            backStackEntry ->
+                            val eventId = backStackEntry.arguments?.getInt("eventId")
+
+                            val eventModifyViewModel = EventModifyViewModel(
+                                eventId = eventId!!,
+                                eventManager = eventManager,
+                            )
 
                             EventModifyScreen(
                                 navController = navController,

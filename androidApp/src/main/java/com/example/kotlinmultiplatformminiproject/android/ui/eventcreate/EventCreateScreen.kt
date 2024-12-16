@@ -17,7 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.kotlinmultiplatformminiproject.Event
 import com.example.kotlinmultiplatformminiproject.android.MyApplicationTheme
 
 @Composable
@@ -25,14 +27,31 @@ fun EventCreateScreen(
     navController: NavController,
     viewModel: EventCreateViewModel
 ) {
+
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+
     EventCreateContent(
-        onCancel = { navController.popBackStack() }
+        onCancel = { navController.popBackStack() },
+        addNewEvent = { event ->
+            viewModel.addNewEvent(event, navController)
+        },
+        event = uiState?.event,
+        onNameChanged = { viewModel.onNameChanged(it) },
+        onCityChanged = { viewModel.onCityChanged(it) },
+        onCountryChanged = { viewModel.onCountryChanged(it) },
+        onCapacityChanged = { viewModel.onCapacityChanged(it) }
     )
 }
 
 @Composable
 fun EventCreateContent(
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
+    addNewEvent: (event: Event) -> Unit,
+    event: Event?,
+    onNameChanged: (String) -> Unit,
+    onCityChanged: (String) -> Unit,
+    onCountryChanged: (String) -> Unit,
+    onCapacityChanged: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -55,11 +74,10 @@ fun EventCreateContent(
                     unfocusedLabelColor = MaterialTheme.colorScheme.primary,
                     unfocusedTrailingIconColor = MaterialTheme.colorScheme.primary
                 ),
-                value = "",
-                onValueChange = { /*TODO*/ },
+                value = event?.name ?: "",
+                onValueChange = { onNameChanged(it) },
                 label = { Text("Name") },
             )
-
 
             Text(
                 text = "Place",
@@ -76,8 +94,8 @@ fun EventCreateContent(
                     unfocusedLabelColor = MaterialTheme.colorScheme.primary,
                     unfocusedTrailingIconColor = MaterialTheme.colorScheme.primary
                 ),
-                value = "",
-                onValueChange = { /*TODO*/ },
+                value = event?.location ?: "",
+                onValueChange = { onCityChanged(it) },
                 label = { Text("City") },
             )
 
@@ -89,8 +107,8 @@ fun EventCreateContent(
                     unfocusedLabelColor = MaterialTheme.colorScheme.primary,
                     unfocusedTrailingIconColor = MaterialTheme.colorScheme.primary
                 ),
-                value = "",
-                onValueChange = { /*TODO*/ },
+                value = event?.country ?: "",
+                onValueChange = { onCountryChanged(it) },
                 label = { Text("Country") },
             )
 
@@ -102,8 +120,8 @@ fun EventCreateContent(
                     unfocusedLabelColor = MaterialTheme.colorScheme.primary,
                     unfocusedTrailingIconColor = MaterialTheme.colorScheme.primary
                 ),
-                value = "",
-                onValueChange = { /*TODO*/ },
+                value = event?.capacity.toString(),
+                onValueChange = { onCapacityChanged(it) },
                 label = { Text("Capacity") },
             )
         }
@@ -124,7 +142,7 @@ fun EventCreateContent(
             }
 
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { addNewEvent(event!!) },
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text("Add event")
@@ -138,7 +156,19 @@ fun EventCreateContent(
 fun EventCreateContentPreview() {
     MyApplicationTheme {
         EventCreateContent(
-            onCancel = { }
+            onCancel = { },
+            addNewEvent = { },
+            event = Event(
+                id = 0,
+                name = "",
+                location = "",
+                country = "",
+                capacity = 0
+            ),
+            onNameChanged = { },
+            onCityChanged = { },
+            onCountryChanged = { },
+            onCapacityChanged = { }
         )
     }
 }

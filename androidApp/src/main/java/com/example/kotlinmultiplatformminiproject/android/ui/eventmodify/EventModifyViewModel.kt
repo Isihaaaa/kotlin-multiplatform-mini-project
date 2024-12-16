@@ -4,15 +4,22 @@ import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.example.kotlinmultiplatformminiproject.Event
+import com.example.kotlinmultiplatformminiproject.android.ui.manager.EventManager
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class EventModifyViewModel : ViewModel(), DefaultLifecycleObserver {
+class EventModifyViewModel(
+    private val eventId: Int,
+    private val eventManager: EventManager
+) : ViewModel(), DefaultLifecycleObserver {
     val uiState: StateFlow<UIState?>
     private val businessData: MutableStateFlow<BusinessData?> = MutableStateFlow(null)
 
@@ -46,21 +53,68 @@ class EventModifyViewModel : ViewModel(), DefaultLifecycleObserver {
     }
 
     private fun createBusinessData(): BusinessData {
-
+        val event = eventManager.getEventById(eventId)
         return BusinessData(
-           event = Event(
-                id = 0,
-                name = "",
-                location = "",
-                country = "",
-                capacity = 0
-            )
+           event = event
         )
     }
 
     //// EVENT HANDLING
 
-    //// OBJECT HOLDERS
+    fun modifiedEvent(event: Event?, navController: NavController) {
+        if (event == null) return
+
+        viewModelScope.launch {
+            try {
+                _showLoading.value = true
+                delay(1000)
+
+                eventManager.modifyEvent(event)
+
+                navController.popBackStack()
+            } catch (e: Exception) {
+                Log.e("EventCreateViewModel", "Error: ${e.message}")
+            } finally {
+                _showLoading.value = false
+            }
+        }
+    }
+
+    fun onNameChanged(text: String) {
+        businessData.update {
+            it!!.copy(
+                event = it.event.copy(name = text),
+            )
+        }
+    }
+
+
+    fun onCityChanged(text: String) {
+        businessData.update {
+            it!!.copy(
+                event = it.event.copy(location = text),
+            )
+        }
+    }
+
+    fun onCountryChanged(text: String) {
+        businessData.update {
+            it!!.copy(
+                event = it.event.copy(country = text),
+            )
+        }
+    }
+
+    fun onCapacityChanged(text: String) {
+        businessData.update {
+            it!!.copy(
+                event = it.event.copy(capacity = text.toInt()),
+            )
+        }
+    }
+
+
+        //// OBJECT HOLDERS
 
     data class BusinessData(
         val event: Event,

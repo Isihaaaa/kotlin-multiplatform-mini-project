@@ -25,6 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.kotlinmultiplatformminiproject.Event
 import com.example.kotlinmultiplatformminiproject.android.MyApplicationTheme
@@ -35,12 +36,18 @@ fun EventListScreen(
     navController: NavController,
     viewModel: EventListViewModel
 ) {
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+
     EventListContent(
         navigateToEventModify = {
-            navController.navigate(Route.EVENT_MODIFY)
+            viewModel.navigateToModifyEvent(it, navController)
         },
         onAddClicked = {
             navController.navigate(Route.EVENT_CREATE)
+        },
+        events = uiState?.events ?: emptyList(),
+        deleteEvent = { event ->
+            viewModel.deleteEvent(event)
         }
     )
 }
@@ -48,10 +55,21 @@ fun EventListScreen(
 @Composable
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 fun EventListContentPreview() {
+    val listItems = List(10) {
+        Event(
+            id = it,
+            name = "Event $it name",
+            location = "Location $it",
+            country = "Country $it",
+            capacity = IntRange(1, 15).random()
+        )
+    }
     MyApplicationTheme {
         EventListContent(
             navigateToEventModify = { },
-            onAddClicked = { }
+            onAddClicked = { },
+            events = listItems,
+            deleteEvent = { }
         )
     }
 }
@@ -59,28 +77,36 @@ fun EventListContentPreview() {
 @Composable
 fun EventListContent(
     navigateToEventModify: (Event) -> Unit,
-    onAddClicked: () -> Unit
+    onAddClicked: () -> Unit,
+    events: List<Event>,
+    deleteEvent: (Event) -> Unit
 ) {
     Box(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val listItems = List(10) {
-                Event(
-                    id = it,
-                    name = "Event $it name",
-                    location = "Location $it",
-                    country = "Country $it",
-                    capacity = IntRange(1, 15).random()
-                )
-            }
+//            val listItems = List(10) {
+//                Event(
+//                    id = it,
+//                    name = "Event $it name",
+//                    location = "Location $it",
+//                    country = "Country $it",
+//                    capacity = IntRange(1, 15).random()
+//                )
+//            }
 
-            items(listItems) {
-                EventListItem(event = it, navigateToEventModify = navigateToEventModify)
+            items(events) {
+                EventListItem(
+                    event = it,
+                    navigateToEventModify = navigateToEventModify,
+                    deleteEvent = deleteEvent
+                )
             }
         }
 
@@ -105,7 +131,11 @@ fun EventListContent(
 }
 
 @Composable
-fun EventList(events: List<Event>, navigateToEventModify: (Event) -> Unit) {
+fun EventList(
+    events: List<Event>,
+    navigateToEventModify: (Event) -> Unit,
+    deleteEvent: (Event) -> Unit
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize(),
@@ -113,7 +143,11 @@ fun EventList(events: List<Event>, navigateToEventModify: (Event) -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         items(events) {
-            EventListItem(event = it, navigateToEventModify = navigateToEventModify)
+            EventListItem(
+                event = it,
+                navigateToEventModify = navigateToEventModify,
+                deleteEvent = deleteEvent
+            )
         }
     }
 }
@@ -153,13 +187,18 @@ fun EventListPreview() {
                     capacity = 4
                 ),
             ),
-            navigateToEventModify = {}
+            navigateToEventModify = {},
+            deleteEvent = {}
         )
     }
 }
 
 @Composable
-fun EventListItem(event: Event, navigateToEventModify: (Event) -> Unit) {
+fun EventListItem(
+    event: Event,
+    navigateToEventModify: (Event) -> Unit,
+    deleteEvent: (Event) -> Unit
+) {
     // név, helyszín, kapacitás és akciók
     Row(
         modifier = Modifier
@@ -184,7 +223,8 @@ fun EventListItem(event: Event, navigateToEventModify: (Event) -> Unit) {
                     .padding(top = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Text(text = event.location,
+                Text(
+                    text = event.location,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onPrimary
                 )
@@ -197,7 +237,11 @@ fun EventListItem(event: Event, navigateToEventModify: (Event) -> Unit) {
         }
 
         Column(
-            modifier = Modifier.weight(0.1f),
+            modifier = Modifier
+                .weight(0.1f)
+                .clickable {
+                    deleteEvent(event)
+                },
             verticalArrangement = Arrangement.Center,
         ) {
             Icon(
@@ -222,7 +266,8 @@ fun EventListItemPreview() {
                 country = "Country 1",
                 capacity = 1
             ),
-            navigateToEventModify = {}
+            navigateToEventModify = {},
+            deleteEvent = {}
         )
     }
 }
