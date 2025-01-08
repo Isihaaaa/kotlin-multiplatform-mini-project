@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import com.example.kotlinmultiplatformminiproject.android.Route
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -83,14 +85,14 @@ class LoginViewModel : ViewModel(), DefaultLifecycleObserver {
         }
     }
 
-    private fun login() {
+    fun login(navController: NavController) {
         viewModelScope.launch {
             try {
                 _showLoading.value = true
 
-                delay(1000)
+                delay(1500)
 
-
+                navController.navigate(Route.EVENT_LIST)
             } catch (e: Exception) {
                 Log.e("LoginViewModel", "Error: ${e.message}")
             } finally {

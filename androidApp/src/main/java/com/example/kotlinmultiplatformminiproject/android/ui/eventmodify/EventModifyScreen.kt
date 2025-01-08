@@ -19,8 +19,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.kotlinmultiplatformminiproject.Event
+import com.example.kotlinmultiplatformminiproject.domain.Event
 import com.example.kotlinmultiplatformminiproject.android.MyApplicationTheme
+import com.example.kotlinmultiplatformminiproject.android.ui.components.AppLoading
 
 @Composable
 fun EventModifyScreen(
@@ -28,6 +29,10 @@ fun EventModifyScreen(
     viewModel: EventModifyViewModel
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+
+    if (viewModel.showLoading.collectAsStateWithLifecycle().value) {
+        AppLoading()
+    }
 
     EventModifyContent(
         onCancel = { navController.popBackStack() },

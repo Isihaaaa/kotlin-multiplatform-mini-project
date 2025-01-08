@@ -18,7 +18,6 @@ import com.example.kotlinmultiplatformminiproject.android.ui.eventcreate.EventCr
 import com.example.kotlinmultiplatformminiproject.android.ui.eventcreate.EventCreateViewModel
 import com.example.kotlinmultiplatformminiproject.android.ui.eventlist.EventListScreen
 import com.example.kotlinmultiplatformminiproject.android.ui.eventlist.EventListViewModel
-import com.example.kotlinmultiplatformminiproject.android.ui.eventmodify.EventModifyContent
 import com.example.kotlinmultiplatformminiproject.android.ui.eventmodify.EventModifyScreen
 import com.example.kotlinmultiplatformminiproject.android.ui.eventmodify.EventModifyViewModel
 import com.example.kotlinmultiplatformminiproject.android.ui.login.LoginScreen

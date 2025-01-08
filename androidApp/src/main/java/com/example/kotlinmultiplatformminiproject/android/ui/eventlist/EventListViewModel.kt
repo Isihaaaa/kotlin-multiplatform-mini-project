@@ -5,8 +5,9 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.kotlinmultiplatformminiproject.Event
+import com.example.kotlinmultiplatformminiproject.domain.Event
 import com.example.kotlinmultiplatformminiproject.android.ui.manager.EventManager
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -64,13 +65,25 @@ class EventListViewModel(
     //// EVENT HANDLING
 
     fun deleteEvent(event: Event) {
-        businessData.value?.events?.let {
-            val newEvents = it.toMutableList()
-            newEvents.remove(event)
-            businessData.value = businessData.value?.copy(events = newEvents)
-        }
+        viewModelScope.launch {
+            try {
+                _showLoading.value = true
 
-        eventManager.deleteEvent(event)
+                delay(1000)
+
+                businessData.value?.events?.let {
+                    val newEvents = it.toMutableList()
+                    newEvents.remove(event)
+                    businessData.value = businessData.value?.copy(events = newEvents)
+                }
+
+                eventManager.deleteEvent(event)
+            } catch (e: Exception) {
+                Log.e("EventModifyViewModel", "Error: ${e.message}")
+            } finally {
+                _showLoading.value = false
+            }
+        }
     }
 
     fun navigateToModifyEvent(event: Event, navController: NavController) {

@@ -22,14 +22,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.kotlinmultiplatformminiproject.Event
+import com.example.kotlinmultiplatformminiproject.domain.Event
 import com.example.kotlinmultiplatformminiproject.android.MyApplicationTheme
 import com.example.kotlinmultiplatformminiproject.android.Route
+import com.example.kotlinmultiplatformminiproject.android.ui.components.AppLoading
 
 @Composable
 fun EventListScreen(
@@ -37,6 +37,10 @@ fun EventListScreen(
     viewModel: EventListViewModel
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+
+    if (viewModel.showLoading.collectAsStateWithLifecycle().value) {
+        AppLoading()
+    }
 
     EventListContent(
         navigateToEventModify = {
@@ -113,7 +117,6 @@ fun EventListContent(
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .background(Color.White)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

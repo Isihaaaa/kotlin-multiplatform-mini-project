@@ -5,7 +5,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.kotlinmultiplatformminiproject.Event
+import com.example.kotlinmultiplatformminiproject.domain.Event
 import com.example.kotlinmultiplatformminiproject.android.ui.manager.EventManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

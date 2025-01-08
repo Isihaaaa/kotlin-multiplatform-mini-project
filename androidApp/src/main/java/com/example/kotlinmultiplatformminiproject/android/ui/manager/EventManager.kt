@@ -1,6 +1,6 @@
 package com.example.kotlinmultiplatformminiproject.android.ui.manager
 
-import com.example.kotlinmultiplatformminiproject.Event
+import com.example.kotlinmultiplatformminiproject.domain.Event
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 

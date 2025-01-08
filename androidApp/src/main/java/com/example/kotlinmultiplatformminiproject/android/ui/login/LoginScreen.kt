@@ -18,15 +18,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.kotlinmultiplatformminiproject.Greeting
+import com.example.kotlinmultiplatformminiproject.Shared
 import com.example.kotlinmultiplatformminiproject.android.GreetingView
 import com.example.kotlinmultiplatformminiproject.android.MyApplicationTheme
-import com.example.kotlinmultiplatformminiproject.android.Route
+import com.example.kotlinmultiplatformminiproject.android.ui.components.AppLoading
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -36,14 +35,19 @@ fun LoginScreen(
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
+    if (viewModel.showLoading.collectAsStateWithLifecycle().value) {
+        AppLoading()
+    }
+
     LoginScreenContent(
-        navigateToEventList = { navController.navigate(Route.EVENT_LIST) },
+        navigateToEventList = { viewModel.login(navController) },
         email = uiState!!.email,
         password = uiState.password,
         onEmailChanged = { viewModel.onEmailChanged(it) },
         isEmailError = uiState.isEmailError,
         onPasswordChanged = { viewModel.onPasswordChanged(it) }
     )
+
 }
 
 @Composable
@@ -65,7 +69,6 @@ fun LoginScreenContent(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
 
             OutlinedTextField(
                 colors = OutlinedTextFieldDefaults.colors(
@@ -113,7 +116,7 @@ fun LoginScreenContent(
             }
         }
 
-        GreetingView(text = Greeting().greet(), modifier = Modifier.align(Alignment.BottomCenter))
+        GreetingView(text = Shared().greet(), modifier = Modifier.align(Alignment.BottomCenter))
     }
 }
 
