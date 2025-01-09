@@ -5,8 +5,11 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.Database
 import com.example.kotlinmultiplatformminiproject.domain.Event
 import com.example.kotlinmultiplatformminiproject.android.ui.manager.EventManager
+import com.example.kotlinmultiplatformminiproject.database.getEventById
+import com.example.kotlinmultiplatformminiproject.database.insertOrReplaceEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,7 +21,8 @@ import kotlinx.coroutines.launch
 
 class EventModifyViewModel(
     private val eventId: Int,
-    private val eventManager: EventManager
+    private val eventManager: EventManager,
+    private val db: Database
 ) : ViewModel(), DefaultLifecycleObserver {
     val uiState: StateFlow<UIState?>
     private val businessData: MutableStateFlow<BusinessData?> = MutableStateFlow(null)
@@ -53,7 +57,9 @@ class EventModifyViewModel(
     }
 
     private fun createBusinessData(): BusinessData {
-        val event = eventManager.getEventById(eventId)
+//        val event = eventManager.getEventById(eventId)
+        val event = getEventById(eventId.toLong(), db) ?: throw Exception("Event not found")
+
         return BusinessData(
            event = event
         )
@@ -69,7 +75,9 @@ class EventModifyViewModel(
                 _showLoading.value = true
                 delay(1000)
 
-                eventManager.modifyEvent(event)
+                insertOrReplaceEvent(db, event)
+
+//                eventManager.modifyEvent(event)
 
                 navController.popBackStack()
             } catch (e: Exception) {

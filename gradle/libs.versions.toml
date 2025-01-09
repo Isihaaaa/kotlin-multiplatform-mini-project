@@ -4,7 +4,7 @@ kotlin = "2.0.0"
 compose = "1.5.4"
 compose-material3 = "1.1.2"
 androidx-activityCompose = "1.8.0"
-sqldelight = "1.5.3"
+sqldelight = "2.0.2"
 dagger = "2.42"
 composeNavigation = "2.8.5"
 
@@ -21,8 +21,7 @@ navigation-compose = { module = "androidx.navigation:navigation-compose", versio
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
-sqlDelight = { id = "com.squareup.sqldelight", version.ref = "sqldelight" }
-dagger = { id = "com.google.dagger", version.ref = "dagger" }
+sqlDelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinCocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }

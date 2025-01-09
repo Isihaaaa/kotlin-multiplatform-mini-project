@@ -1,6 +1,7 @@
 package com.example.kotlinmultiplatformminiproject.android
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,8 @@ import com.example.kotlinmultiplatformminiproject.android.ui.eventmodify.EventMo
 import com.example.kotlinmultiplatformminiproject.android.ui.login.LoginScreen
 import com.example.kotlinmultiplatformminiproject.android.ui.login.LoginViewModel
 import com.example.kotlinmultiplatformminiproject.android.ui.manager.EventManager
+import com.example.kotlinmultiplatformminiproject.database.DriverFactory
+import com.example.kotlinmultiplatformminiproject.database.createDatabase
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,6 +34,7 @@ class MainActivity : ComponentActivity() {
             MyApplicationTheme {
                 val navController = rememberNavController()
                 val eventManager = EventManager()
+                val database = createDatabase(DriverFactory(this))
 
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -49,7 +53,8 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = Route.EVENT_LIST) {
                             val eventListViewModel = EventListViewModel(
-                                eventManager = eventManager
+                                eventManager = eventManager,
+                                db = database
                             )
                             EventListScreen(
                                 navController = navController,
@@ -58,7 +63,8 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = Route.EVENT_CREATE) {
                             val eventCreateViewModel = EventCreateViewModel(
-                                eventManager = eventManager
+                                eventManager = eventManager,
+                                db = database
                             )
 
                             EventCreateScreen(
@@ -80,6 +86,7 @@ class MainActivity : ComponentActivity() {
                             val eventModifyViewModel = EventModifyViewModel(
                                 eventId = eventId!!,
                                 eventManager = eventManager,
+                                db = database
                             )
 
                             EventModifyScreen(

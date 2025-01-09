@@ -22,7 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.kotlinmultiplatformminiproject.Shared
+import com.example.kotlinmultiplatformminiproject.Greeting
 import com.example.kotlinmultiplatformminiproject.android.GreetingView
 import com.example.kotlinmultiplatformminiproject.android.MyApplicationTheme
 import com.example.kotlinmultiplatformminiproject.android.ui.components.AppLoading
@@ -116,7 +116,7 @@ fun LoginScreenContent(
             }
         }
 
-        GreetingView(text = Shared().greet(), modifier = Modifier.align(Alignment.BottomCenter))
+        GreetingView(text = Greeting().greet(), modifier = Modifier.align(Alignment.BottomCenter))
     }
 }
 

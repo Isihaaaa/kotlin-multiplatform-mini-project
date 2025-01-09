@@ -5,8 +5,11 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.Database
 import com.example.kotlinmultiplatformminiproject.domain.Event
 import com.example.kotlinmultiplatformminiproject.android.ui.manager.EventManager
+import com.example.kotlinmultiplatformminiproject.database.deleteEventById
+import com.example.kotlinmultiplatformminiproject.database.getAllEvents
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,7 +20,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class EventListViewModel(
-    private val eventManager: EventManager
+    private val eventManager: EventManager,
+    private val db: Database
 ) : ViewModel(), DefaultLifecycleObserver {
     val uiState: StateFlow<UIState?>
     private val businessData: MutableStateFlow<BusinessData?> = MutableStateFlow(null)
@@ -28,12 +32,9 @@ class EventListViewModel(
     //// STATE HANDLING
 
     init {
-        uiState = combine(
-            businessData,
-            eventManager.eventParameters
-        ) { businessData, eventManager ->
+        uiState = businessData.map {
             try {
-                businessData?.toUIState(eventManager)
+                it?.toUIState()
             } catch (e: Exception) {
                 Log.e("EventModifyViewModel", "Error: ${e.message}")
 
@@ -56,9 +57,11 @@ class EventListViewModel(
     }
 
     private fun createBusinessData(): BusinessData {
+        val events = getAllEvents(db)
 
         return BusinessData(
-            events = eventManager.eventParameters.value.events
+            events = events
+//          events = eventManager.eventParameters.value.events
         )
     }
 
@@ -74,10 +77,11 @@ class EventListViewModel(
                 businessData.value?.events?.let {
                     val newEvents = it.toMutableList()
                     newEvents.remove(event)
+
                     businessData.value = businessData.value?.copy(events = newEvents)
                 }
-
-                eventManager.deleteEvent(event)
+                deleteEventById(event.id.toLong(), db)
+//                eventManager.deleteEvent(event)
             } catch (e: Exception) {
                 Log.e("EventModifyViewModel", "Error: ${e.message}")
             } finally {
@@ -96,9 +100,9 @@ class EventListViewModel(
     data class BusinessData(
         val events: List<Event>,
     ) {
-        fun toUIState(eventParameters: EventManager.EventParameters) =
+        fun toUIState() =
             UIState(
-                events = eventParameters.events,
+                events = events,
             )
     }
 

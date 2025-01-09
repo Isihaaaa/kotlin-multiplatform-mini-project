@@ -1,0 +1,32 @@
+CREATE TABLE EventEntity(
+    id INTEGER PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL,
+    location TEXT NOT NULL,
+    country TEXT NOT NULL,
+    capacity INTEGER NOT NULL
+);
+
+INSERT INTO EventEntity (id, name, location, country, capacity)
+VALUES (1, 'First Event', 'First Location', 'First Country', 100);
+
+getAllEvents:
+SELECT *
+FROM EventEntity;
+
+getEventById:
+SELECT *
+FROM EventEntity
+WHERE id = ?;
+
+insertOrReplaceEvent:
+INSERT OR REPLACE INTO EventEntity(
+    id,
+    name,
+    location,
+    country,
+    capacity
+) VALUES(?, ?, ?, ?, ?);
+
+deleteEventById:
+DELETE FROM EventEntity
+WHERE id = ?;

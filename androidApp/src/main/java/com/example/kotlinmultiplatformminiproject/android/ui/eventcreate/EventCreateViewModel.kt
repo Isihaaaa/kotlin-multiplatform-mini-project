@@ -5,8 +5,10 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.Database
 import com.example.kotlinmultiplatformminiproject.domain.Event
 import com.example.kotlinmultiplatformminiproject.android.ui.manager.EventManager
+import com.example.kotlinmultiplatformminiproject.database.insertOrReplaceEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,9 +17,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.UUID
+import kotlin.random.Random
 
 class EventCreateViewModel(
-    private val eventManager: EventManager
+    private val eventManager: EventManager,
+    private val db: Database
 ) : ViewModel(), DefaultLifecycleObserver {
     val uiState: StateFlow<UIState?>
     private val businessData: MutableStateFlow<BusinessData?> = MutableStateFlow(null)
@@ -72,15 +77,17 @@ class EventCreateViewModel(
                 _showLoading.value = true
                 delay(1000)
 
-                eventManager.addNewEvent(
-                    Event(
-                        id = eventManager.eventParameters.value.events.size + 1,
-                        name = event.name,
-                        location = event.location,
-                        country = event.country,
-                        capacity = event.capacity
-                    )
-                )
+                insertOrReplaceEvent(db, Event(Random.nextInt(), event.name, event.location, event.country, event.capacity))
+
+//                eventManager.addNewEvent(
+//                    Event(
+//                        id = eventManager.eventParameters.value.events.size + 1,
+//                        name = event.name,
+//                        location = event.location,
+//                        country = event.country,
+//                        capacity = event.capacity
+//                    )
+//                )
 
                 navController.popBackStack()
             } catch (e: Exception) {

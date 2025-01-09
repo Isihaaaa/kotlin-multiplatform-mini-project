@@ -16,7 +16,7 @@ kotlin {
             }
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -31,17 +31,15 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             //put your multiplatform dependencies here
-            implementation("com.squareup.sqldelight:runtime:1.5.3")
-            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
         }
 
         androidMain.dependencies {
-            implementation("com.squareup.sqldelight:android-driver:1.5.3")
+            implementation("app.cash.sqldelight:android-driver:2.0.2")
         }
 
-//        iosMain.dependencies {
-//            implementation("com.squareup.sqldelight:native-driver:1.5.3")
-//        }
+        iosMain.dependencies {
+            implementation("app.cash.sqldelight:native-driver:2.0.2")
+        }
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -58,5 +56,13 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+}
+
+sqldelight {
+    databases {
+        create("Database") {
+            packageName.set("com.example")
+        }
     }
 }
