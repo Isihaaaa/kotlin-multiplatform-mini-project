@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -13,8 +14,13 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -58,6 +64,9 @@ fun EventCreateContent(
     onCountryChanged: (String) -> Unit,
     onCapacityChanged: (String) -> Unit
 ) {
+    var isNameError by remember { mutableStateOf(false) }
+    var isLocationError by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -80,8 +89,12 @@ fun EventCreateContent(
                     unfocusedTrailingIconColor = MaterialTheme.colorScheme.primary
                 ),
                 value = event?.name ?: "",
-                onValueChange = { onNameChanged(it) },
+                onValueChange = {
+                    onNameChanged(it)
+                    isNameError = it.isEmpty()
+                },
                 label = { Text("Name") },
+                isError = isNameError
             )
 
             Text(
@@ -100,8 +113,14 @@ fun EventCreateContent(
                     unfocusedTrailingIconColor = MaterialTheme.colorScheme.primary
                 ),
                 value = event?.location ?: "",
-                onValueChange = { onCityChanged(it) },
+                onValueChange = {
+                    onCityChanged(it)
+                    isLocationError = it.isEmpty()
+                    isLocationError = it.length > 100
+                },
                 label = { Text("City") },
+                isError = isLocationError
+
             )
 
             OutlinedTextField(
@@ -113,7 +132,9 @@ fun EventCreateContent(
                     unfocusedTrailingIconColor = MaterialTheme.colorScheme.primary
                 ),
                 value = event?.country ?: "",
-                onValueChange = { onCountryChanged(it) },
+                onValueChange = {
+                    onCountryChanged(it)
+                },
                 label = { Text("Country") },
             )
 
@@ -126,8 +147,11 @@ fun EventCreateContent(
                     unfocusedTrailingIconColor = MaterialTheme.colorScheme.primary
                 ),
                 value = event?.capacity.toString(),
-                onValueChange = { onCapacityChanged(it) },
+                onValueChange = {
+                    onCapacityChanged(it)
+                },
                 label = { Text("Capacity") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             )
         }
 
