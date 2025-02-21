@@ -45,7 +45,8 @@ fun LoginScreen(
         password = uiState.password,
         onEmailChanged = { viewModel.onEmailChanged(it) },
         isEmailError = uiState.isEmailError,
-        onPasswordChanged = { viewModel.onPasswordChanged(it) }
+        onPasswordChanged = { viewModel.onPasswordChanged(it) },
+        isPasswordError = uiState.isPasswordError
     )
 
 }
@@ -57,7 +58,8 @@ fun LoginScreenContent(
     password: String,
     onEmailChanged: (String) -> Unit,
     isEmailError: Boolean,
-    onPasswordChanged: (String) -> Unit
+    onPasswordChanged: (String) -> Unit,
+    isPasswordError: Boolean
 ) {
     Box(
         modifier = Modifier
@@ -105,7 +107,8 @@ fun LoginScreenContent(
                         imageVector = Icons.Filled.Lock,
                         contentDescription = null
                     )
-                }
+                },
+                isError = isPasswordError
             )
 
             Button(
@@ -130,7 +133,8 @@ fun LoginScreenPreview() {
             password = "",
             onEmailChanged = { },
             isEmailError = false,
-            onPasswordChanged = { }
+            onPasswordChanged = { },
+            isPasswordError = false
         )
     }
 }

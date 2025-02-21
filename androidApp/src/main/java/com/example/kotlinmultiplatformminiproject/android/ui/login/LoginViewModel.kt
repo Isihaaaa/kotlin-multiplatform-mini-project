@@ -62,26 +62,28 @@ class LoginViewModel : ViewModel(), DefaultLifecycleObserver {
     //// EVENT HANDLING
 
     fun onEmailChanged(email: String) {
-        val emailRegex =
-            "(?:[a-z0-9!#\$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#\$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
-        val isEmailError = !email.matches(emailRegex.toRegex())
+//        val emailRegex =
+//            "(?:[a-z0-9!#\$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#\$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
+//        val isEmailError = !email.matches(emailRegex.toRegex())
+        val check = "asd@asd.hu"
+        val isEmailError = check.contentEquals(email)
 
         businessData.update {
             it!!.copy(
                 email = email,
-                isEmailError = isEmailError
+//                isEmailError = !isEmailError
             )
         }
     }
 
     fun onPasswordChanged(password: String) {
-        val passwordRegex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{4,}"
-        val isPasswordError = !passwordRegex.toRegex().matches(password)
+        val check = "Test1234"
+        val isPasswordError = check.contentEquals(password)
 
         businessData.update {
             it!!.copy(
                 password = password,
-                isPasswordError = isPasswordError
+//                isPasswordError = !isPasswordError
             )
         }
     }
@@ -89,6 +91,22 @@ class LoginViewModel : ViewModel(), DefaultLifecycleObserver {
     fun login(navController: NavController) {
         viewModelScope.launch {
             try {
+                val checkPassword = "Test1234"
+                val isPasswordError = checkPassword.contentEquals(businessData.value!!.password)
+
+                val checkEmail = "asd@asd.hu"
+                val isEmailError = checkEmail.contentEquals(businessData.value!!.email)
+
+                if (!isPasswordError && !isEmailError) {
+                    businessData.update {
+                        it!!.copy(
+                            isPasswordError = isPasswordError,
+                            isEmailError = isEmailError
+                        )
+                        return@launch
+                    }
+                }
+
                 _showLoading.value = true
 
                 delay(1500)
